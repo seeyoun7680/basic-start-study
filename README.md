@@ -1,5 +1,5 @@
 # 1) Statistical summary on dataset
-테스트
+https://html-preview.github.io/?url=https://github.com/seeyoun7680/basic-start-study/blob/main/R%20study/day1'.html
 # 2) Mean difference test between two groups
 
 # 3) Mean difference test among more than three groups
