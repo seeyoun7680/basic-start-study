@@ -1,0 +1,85 @@
+---
+title: "HomeWork"
+format: 
+  html: 
+    toc: true
+    toc-location: right
+    toc-title: "Contents"
+    toc-depth: 3
+    number-sections: true
+    smooth-scroll: true
+editor: visual
+---
+
+# 2026-01-08 숙제
+
+## 3장
+
+### 3.23
+
+\(1\)
+
+```{r}
+x = c(684, 390, 331, 471, 260, 279, 252, 68, 2055, 1145, 879, 93, 119, 1124, 553, 327, 652, 954, 590, 620, 3200, 594, 450, 515, 890, 452, 680, 480, 740, 715)
+mean(x)
+median(x)
+sd(x)
+var(x)
+quantile(x)
+```
+
+\(2\)
+
+```{r}
+boxplot(x)
+```
+
+\(3\)
+
+```{r}
+new_x = c(684, 390, 331, 471, 260, 279, 252, 68, 1145, 879, 93, 119, 1124, 553, 327, 652, 954, 590, 620, 594, 450, 515, 890, 452, 680, 480, 740, 715)
+boxplot(new_x)
+```
+
+### 3.24
+
+\(1\) 50, 60, 70점대에서 대부분 몰려있음
+
+\(2\)
+
+```{r}
+score <- c(21, 27, 32, 41, 41, 42, 43, 44, 44, 45, 52, 52, 53, 54, 56, 56, 57, 58, 59, 59, 59, 61, 62, 62,62,63,63,63,63,63,63,64,64,64,65,65,67,68,68,69,71,75,76,76,77,78,79,84,87,88,89,92,98)
+freq <- table(score)
+print(freq)
+mode <- as.numeric(names(which.max(freq)))
+print(mode);median(score)
+```
+
+\(3\)
+
+```{r}
+quantile(score, probs = c(0.25, 0.75))
+```
+
+\(4\)
+
+```{r}
+print(sprintf("%.1f%%", mean(score <= 40) * 100))
+print(sprintf("%.1f%%", mean(score >= 70) * 100))
+
+```
+
+### 3.26
+
+```{r}
+# 부서별 인원 수
+n <- c(20, 45, 30, 50, 15)
+
+# 부서별 평균 점수
+avg <- c(79, 80, 75, 85, 90)
+
+# 전체 직원 평균 점수 (가중평균)
+overall_mean <- weighted.mean(avg, n)
+
+overall_mean
+```
