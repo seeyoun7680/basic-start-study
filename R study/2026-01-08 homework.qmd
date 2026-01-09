@@ -83,3 +83,82 @@ overall_mean <- weighted.mean(avg, n)
 
 overall_mean
 ```
+
+## 4장
+
+### 동전던지기 시각화
+
+0.1로 세팅
+
+```{r}
+# -----------------------------
+# 1. 설정
+# -----------------------------
+set.seed(123)          # 재현 가능성
+n <- 10000             # 동전 던지는 횟수
+p <- 0.1    # 앞면 확률을 난수로 설정
+
+p
+# -----------------------------
+# 2. 동전 던지기 (앞면=1, 뒷면=0)
+# -----------------------------
+coin <- rbinom(n = n, size = 1, prob = p)
+# -----------------------------
+# 3. 누적 앞면 비율 계산
+# -----------------------------
+cum_heads <- cumsum(coin) / seq_len(n)
+# -----------------------------
+# 4. 시각화
+# -----------------------------
+plot(
+  cum_heads,
+  type = "l",
+  col = "blue",
+  lwd = 2,
+  xlab = "Number of Tosses",
+  ylab = "Cumulative Proportion of Heads",
+  main = paste0(
+    "Coin Toss Simulation (p = ", round(p, 3), ")"
+  )
+)
+
+abline(h = p, col = "red", lwd = 2, lty = 2)
+
+```
+
+0.01로 세팅
+
+```{r}
+# -----------------------------
+# 1. 설정
+# -----------------------------
+set.seed(123)          # 재현 가능성
+n <- 10000             # 동전 던지는 횟수
+p <- 0.01    # 앞면 확률을 난수로 설정
+
+p
+# -----------------------------
+# 2. 동전 던지기 (앞면=1, 뒷면=0)
+# -----------------------------
+coin <- rbinom(n = n, size = 1, prob = p)
+# -----------------------------
+# 3. 누적 앞면 비율 계산
+# -----------------------------
+cum_heads <- cumsum(coin) / seq_len(n)
+# -----------------------------
+# 4. 시각화
+# -----------------------------
+plot(
+  cum_heads,
+  type = "l",
+  col = "blue",
+  lwd = 2,
+  xlab = "Number of Tosses",
+  ylab = "Cumulative Proportion of Heads",
+  main = paste0(
+    "Coin Toss Simulation (p = ", round(p, 3), ")"
+  )
+)
+
+abline(h = p, col = "red", lwd = 2, lty = 2)
+```
