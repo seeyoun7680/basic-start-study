@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>fMRI analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="2026-01-25 homework_files/libs/clipboard/clipboard.min.js"></script>
+<script src="2026-01-25 homework_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="2026-01-25 homework_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="2026-01-25 homework_files/libs/quarto-html/popper.min.js"></script>
+<script src="2026-01-25 homework_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="2026-01-25 homework_files/libs/quarto-html/anchor.min.js"></script>
+<link href="2026-01-25 homework_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="2026-01-25 homework_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="2026-01-25 homework_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="2026-01-25 homework_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="2026-01-25 homework_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#fmri-분석-과제" id="toc-fmri-분석-과제" class="nav-link active" data-scroll-target="#fmri-분석-과제"><span class="header-section-number">1</span> fMRI 분석 과제</a>
+  <ul class="collapse">
+  <li><a href="#afni의-rs-fmri-4d-볼륨-파일-하나를-r에서-읽어-오기" id="toc-afni의-rs-fmri-4d-볼륨-파일-하나를-r에서-읽어-오기" class="nav-link" data-scroll-target="#afni의-rs-fmri-4d-볼륨-파일-하나를-r에서-읽어-오기"><span class="header-section-number">1.1</span> 1. AFNI의 RS-fMRI 4D 볼륨 파일 하나를 R에서 읽어 오기</a>
+  <ul class="collapse">
+  <li><a href="#읽어오는-법" id="toc-읽어오는-법" class="nav-link" data-scroll-target="#읽어오는-법"><span class="header-section-number">1.1.1</span> 읽어오는 법</a></li>
+  </ul></li>
+  <li><a href="#데이터의-dimension-확인하는법" id="toc-데이터의-dimension-확인하는법" class="nav-link" data-scroll-target="#데이터의-dimension-확인하는법"><span class="header-section-number">1.2</span> 데이터의 dimension 확인하는법</a></li>
+  <li><a href="#특정-좌표의-복셀들의-bold의-timeseries-추출하는-법" id="toc-특정-좌표의-복셀들의-bold의-timeseries-추출하는-법" class="nav-link" data-scroll-target="#특정-좌표의-복셀들의-bold의-timeseries-추출하는-법"><span class="header-section-number">1.3</span> 특정 좌표의 복셀들의 BOLD의 timeseries 추출하는 법</a></li>
+  </ul></li>
+  <li><a href="#aal3-atlas를-이용해서-4d-볼륨-파일의-각-복셀을-묶어서-roi-별로-bold-구하기" id="toc-aal3-atlas를-이용해서-4d-볼륨-파일의-각-복셀을-묶어서-roi-별로-bold-구하기" class="nav-link" data-scroll-target="#aal3-atlas를-이용해서-4d-볼륨-파일의-각-복셀을-묶어서-roi-별로-bold-구하기"><span class="header-section-number">2</span> AAL3 atlas를 이용해서 4D 볼륨 파일의 각 복셀을 묶어서 ROI 별로 BOLD 구하기</a>
+  <ul class="collapse">
+  <li><a href="#각-복셀들을-aal3-atlas에-맞춰서-roi를-지정해서-bold-추출하는-법" id="toc-각-복셀들을-aal3-atlas에-맞춰서-roi를-지정해서-bold-추출하는-법" class="nav-link" data-scroll-target="#각-복셀들을-aal3-atlas에-맞춰서-roi를-지정해서-bold-추출하는-법"><span class="header-section-number">2.1</span> 각 복셀들을 AAL3 atlas에 맞춰서 ROI를 지정해서 BOLD 추출하는 법</a></li>
+  <li><a href="#aal3-atlas의-labeling-확인하는-법" id="toc-aal3-atlas의-labeling-확인하는-법" class="nav-link" data-scroll-target="#aal3-atlas의-labeling-확인하는-법"><span class="header-section-number">2.2</span> AAL3 atlas의 labeling 확인하는 법</a></li>
+  <li><a href="#각-roi에-대해-뇌-영역-labeling-하는-법" id="toc-각-roi에-대해-뇌-영역-labeling-하는-법" class="nav-link" data-scroll-target="#각-roi에-대해-뇌-영역-labeling-하는-법"><span class="header-section-number">2.3</span> 각 ROI에 대해 뇌 영역 labeling 하는 법</a></li>
+  <li><a href="#bold를-데이터프레임으로-저장하는-법" id="toc-bold를-데이터프레임으로-저장하는-법" class="nav-link" data-scroll-target="#bold를-데이터프레임으로-저장하는-법"><span class="header-section-number">2.4</span> BOLD를 데이터프레임으로 저장하는 법</a></li>
+  </ul></li>
+  <li><a href="#모든-뇌영역-별-bold의-timeseries-시각화-하기" id="toc-모든-뇌영역-별-bold의-timeseries-시각화-하기" class="nav-link" data-scroll-target="#모든-뇌영역-별-bold의-timeseries-시각화-하기"><span class="header-section-number">3</span> 모든 뇌영역 별 BOLD의 timeseries 시각화 하기</a>
+  <ul class="collapse">
+  <li><a href="#각-roi-별-벡터-추출하기" id="toc-각-roi-별-벡터-추출하기" class="nav-link" data-scroll-target="#각-roi-별-벡터-추출하기"><span class="header-section-number">3.1</span> 각 ROI 별 벡터 추출하기</a></li>
+  <li><a href="#각-벡터-plot-시각화" id="toc-각-벡터-plot-시각화" class="nav-link" data-scroll-target="#각-벡터-plot-시각화"><span class="header-section-number">3.2</span> 각 벡터 plot 시각화</a></li>
+  </ul></li>
+  <li><a href="#상관계수로-functional-connectivit-y-matrix-구해서-시각화-하기" id="toc-상관계수로-functional-connectivit-y-matrix-구해서-시각화-하기" class="nav-link" data-scroll-target="#상관계수로-functional-connectivit-y-matrix-구해서-시각화-하기"><span class="header-section-number">4</span> 상관계수로 functional connectivit y matrix 구해서 시각화 하기</a>
+  <ul class="collapse">
+  <li><a href="#상관계수-fc란" id="toc-상관계수-fc란" class="nav-link" data-scroll-target="#상관계수-fc란"><span class="header-section-number">4.1</span> 상관계수, FC란?</a></li>
+  <li><a href="#correlation-matrix-시각화" id="toc-correlation-matrix-시각화" class="nav-link" data-scroll-target="#correlation-matrix-시각화"><span class="header-section-number">4.2</span> correlation matrix 시각화</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">fMRI analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="fmri-분석-과제" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> fMRI 분석 과제</h1>
+<section id="afni의-rs-fmri-4d-볼륨-파일-하나를-r에서-읽어-오기" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="afni의-rs-fmri-4d-볼륨-파일-하나를-r에서-읽어-오기"><span class="header-section-number">1.1</span> 1. AFNI의 RS-fMRI 4D 볼륨 파일 하나를 R에서 읽어 오기</h2>
+<section id="읽어오는-법" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="읽어오는-법"><span class="header-section-number">1.1.1</span> 읽어오는 법</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"RNifti"</span>, <span class="at">repos =</span> <span class="st">"https://cloud.r-project.org"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installing package into 'C:/Users/USER/AppData/Local/R/win-library/4.5'
+(as 'lib' is unspecified)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>package 'RNifti' successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+    C:\Users\USER\AppData\Local\Temp\Rtmp6X015G\downloaded_packages</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RNifti)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fmri <span class="ot">&lt;-</span> <span class="fu">readNifti</span>(<span class="st">"C:</span><span class="sc">\\</span><span class="st">Users</span><span class="sc">\\</span><span class="st">USER</span><span class="sc">\\</span><span class="st">Desktop</span><span class="sc">\\</span><span class="st">homework</span><span class="sc">\\</span><span class="st">Filtered_4DVolume.nii"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="데이터의-dimension-확인하는법" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="데이터의-dimension-확인하는법"><span class="header-section-number">1.2</span> 데이터의 dimension 확인하는법</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fmri)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  61  73  61 187</code></pre>
+</div>
+</div>
+</section>
+<section id="특정-좌표의-복셀들의-bold의-timeseries-추출하는-법" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="특정-좌표의-복셀들의-bold의-timeseries-추출하는-법"><span class="header-section-number">1.3</span> 특정 좌표의 복셀들의 BOLD의 timeseries 추출하는 법</h2>
+<p>[x좌표, y좌표, z좌표, time]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>time_series <span class="ot">&lt;-</span> fmri[<span class="dv">37</span>, <span class="dv">37</span>, <span class="dv">41</span>, ]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(time_series)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 187</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(time_series)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.72081524  0.02213347  1.15881217  0.68979460 -0.73898125 -0.95914614</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(time_series, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Time (TR index)"</span>, <span class="at">ylab=</span><span class="st">"Signal"</span>, <span class="at">main=</span><span class="st">"Voxel time series"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-25-homework_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="aal3-atlas를-이용해서-4d-볼륨-파일의-각-복셀을-묶어서-roi-별로-bold-구하기" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> AAL3 atlas를 이용해서 4D 볼륨 파일의 각 복셀을 묶어서 ROI 별로 BOLD 구하기</h1>
+<section id="각-복셀들을-aal3-atlas에-맞춰서-roi를-지정해서-bold-추출하는-법" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="각-복셀들을-aal3-atlas에-맞춰서-roi를-지정해서-bold-추출하는-법"><span class="header-section-number">2.1</span> 각 복셀들을 AAL3 atlas에 맞춰서 ROI를 지정해서 BOLD 추출하는 법</h2>
+<p>AAL3 atlas 읽어들이기</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>aal3 <span class="ot">&lt;-</span> <span class="fu">readNifti</span>(<span class="st">"C:/Users/USER/Desktop/homework/AAL3.nii.gz"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(aal3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 61 73 61</code></pre>
+</div>
+</div>
+<p>fMRI는 4차원이고 aal은 3차원</p>
+<p>frmi[1:3]을 이용해 정렬된 상태인지 확인</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">dim</span>(fmri)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">==</span> <span class="fu">dim</span>(aal3)) <span class="co">#이건 같은배열의 크기만 가지는거임 정렬이 아님</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pixdim</span>(fmri) <span class="co">#voxel 크기비교</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 3 3 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pixdim</span>(aal3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 3 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">pixdim</span>(fmri)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">==</span> <span class="fu">pixdim</span>(aal3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xform</span>(fmri) <span class="co">#공간좌표계, 거의 같은 행렬이면 같은 공간</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]   -3    0    0   90
+[2,]    0    3    0 -126
+[3,]    0    0    3  -72
+[4,]    0    0    0    1
+attr(,"imagedim")
+[1]  61  73  61 187
+attr(,"code")
+[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xform</span>(aal3) <span class="co">#완전히 다르면 registration 필요</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]   -3    0    0   90
+[2,]    0    3    0 -126
+[3,]    0    0    3  -72
+[4,]    0    0    0    1
+attr(,"imagedim")
+[1] 61 73 61
+attr(,"code")
+[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">xform</span>(fmri)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="sc">==</span> <span class="fu">xform</span>(aal3)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>⁎ 논문/결과해석/네트워크 분석에서는 pixidim + xform 확인 필수</p>
+</section>
+<section id="aal3-atlas의-labeling-확인하는-법" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="aal3-atlas의-labeling-확인하는-법"><span class="header-section-number">2.2</span> AAL3 atlas의 labeling 확인하는 법</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">as.vector</span>(aal3))) <span class="co">#aal3에 어떤 라벨들이 있는지 확인</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> labels[labels <span class="sc">!=</span> <span class="dv">0</span>] <span class="co">#0은 background라 빼는거거</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 164</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#label별 voxel 갯수 확인</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="fu">as.vector</span>(aal3))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> tbl[<span class="fu">names</span>(tbl) <span class="sc">!=</span> <span class="st">"0"</span>]   <span class="co"># 0 제거</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 복셀 많은 ROI부터 보기</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>tbl_sorted <span class="ot">&lt;-</span> <span class="fu">sort</span>(tbl, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tbl_sorted, <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   4    6   89    3   90    5   61   62    1   71   94    2   55   72   93   86 
+1503 1469 1453 1430 1343 1342 1148 1127 1038 1037 1001  991  976  956  932  914 
+  19   96    9   95 
+ 907  809  786  765 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#label map이 정수label 인지 확인</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 라벨 값이 모두 정수인지 검사</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>vals <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">as.vector</span>(aal3))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>vals <span class="ot">&lt;-</span> vals[<span class="sc">!</span><span class="fu">is.na</span>(vals)]</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(vals <span class="sc">==</span> <span class="fu">round</span>(vals))<span class="co"># 대략적인 비교. 소숫점이 달라서 완전히 같지는 않음</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 내가 찍은 voxel이 어떤 정수인지 확인. 정수값이 45면 aal3 라벨 45번 roi에 속함</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>aal3[<span class="dv">55</span>, <span class="dv">37</span>, <span class="dv">24</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>label: 각 복셀에 붙어 있는 정수id. 같은 숫자 = 같은 뇌영역 ex) aal3[55, 37, 24]이 45면 amygdala</p>
+<p>AAL3 atlas: https://doi.org/10.1016/j.neuroimage.2019.116189 roi 영역 라벨 표</p>
+<p>만약 fMRI랑 AAL3가 같지 않으면 AFNI/FSL 등으로 register 해야함</p>
+</section>
+<section id="각-roi에-대해-뇌-영역-labeling-하는-법" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="각-roi에-대해-뇌-영역-labeling-하는-법"><span class="header-section-number">2.3</span> 각 ROI에 대해 뇌 영역 labeling 하는 법</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>library <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"C:/Users/USER/Desktop/homework/AAL3v1.nii.txt"</span>,</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">fill =</span> <span class="cn">TRUE</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(library) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"label"</span>, <span class="st">"name"</span>, <span class="st">"label2"</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>library<span class="sc">$</span>label <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(library<span class="sc">$</span>label)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>library<span class="sc">$</span>name  <span class="ot">&lt;-</span> <span class="fu">as.character</span>(library<span class="sc">$</span>name)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(library, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   label               name label2
+1      1       Precentral_L      1
+2      2       Precentral_R      2
+3      3    Frontal_Sup_2_L      3
+4      4    Frontal_Sup_2_R      4
+5      5    Frontal_Mid_2_L      5
+6      6    Frontal_Mid_2_R      6
+7      7 Frontal_Inf_Oper_L      7
+8      8 Frontal_Inf_Oper_R      8
+9      9  Frontal_Inf_Tri_L      9
+10    10  Frontal_Inf_Tri_R     10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>roi_names <span class="ot">&lt;-</span> library<span class="sc">$</span>name[<span class="fu">match</span>(labels, library<span class="sc">$</span>label)]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="fu">dim</span>(fmri)[<span class="dv">4</span>]</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>fmri_mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(fmri, <span class="at">nrow =</span> <span class="fu">prod</span>(<span class="fu">dim</span>(fmri)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]), <span class="at">ncol =</span> T)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>aal_vec <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(aal3)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>roi_ts <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA_real_</span>, <span class="at">nrow =</span> T, <span class="at">ncol =</span> <span class="fu">length</span>(labels))</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(labels)) {</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  lab <span class="ot">&lt;-</span> labels[i]</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(aal_vec <span class="sc">==</span> lab)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  roi_ts[, i] <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(fmri_mat[idx, , <span class="at">drop =</span> <span class="cn">FALSE</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(roi_ts) <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(roi_names),</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">paste0</span>(<span class="st">"ROI_"</span>, labels),</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>                           roi_names)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>roi_names <span class="ot">&lt;-</span> library<span class="sc">$</span>name[<span class="fu">match</span>(labels, library<span class="sc">$</span>label)]</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(roi_ts) <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(roi_names),</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">paste0</span>(<span class="st">"ROI_"</span>, labels),</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>                           roi_names)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(roi_ts) <span class="ot">&lt;-</span> <span class="fu">make.unique</span>(<span class="fu">colnames</span>(roi_ts))</span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(roi_ts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 187 164</code></pre>
+</div>
+</div>
+</section>
+<section id="bold를-데이터프레임으로-저장하는-법" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="bold를-데이터프레임으로-저장하는-법"><span class="header-section-number">2.4</span> BOLD를 데이터프레임으로 저장하는 법</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="fu">nrow</span>(roi_ts)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>df_roi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">TR =</span> <span class="dv">1</span><span class="sc">:</span>T,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  roi_ts</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_roi[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  TR Precentral_L Precentral_R Frontal_Sup_2_L Frontal_Sup_2_R Frontal_Mid_2_L
+1  1  -0.61239428   -0.3776723      -1.2363535       -1.602218      -1.5029133
+2  2  -0.49258933    0.5083196      -0.4801173       -1.065355      -0.3037430
+3  3   0.03930766    0.7625435       1.1958450        1.830180       1.3544958
+4  4  -0.18702179   -0.9324110       2.1102316        3.591137       2.0725394
+5  5  -0.38119489   -1.4935275       0.9360667        1.507657       1.4435305
+6  6   0.34933073    0.4122436      -0.7552648       -1.165055       0.4629733</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(df_roi,</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">file =</span> <span class="st">"C:/Users/USER/Desktop/homework/AAL3_ROI_BOLD.csv"</span>,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="모든-뇌영역-별-bold의-timeseries-시각화-하기" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> 모든 뇌영역 별 BOLD의 timeseries 시각화 하기</h1>
+<section id="각-roi-별-벡터-추출하기" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="각-roi-별-벡터-추출하기"><span class="header-section-number">3.1</span> 각 ROI 별 벡터 추출하기</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>v_amyg <span class="ot">&lt;-</span> roi_ts[, <span class="st">"Amygdala_L"</span>]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(v_amyg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 187</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(v_amyg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  1.3463846  0.1079604 -1.7970667 -1.8047997  0.5761953  2.0836850</code></pre>
+</div>
+</div>
+</section>
+<section id="각-벡터-plot-시각화" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="각-벡터-plot-시각화"><span class="header-section-number">3.2</span> 각 벡터 plot 시각화</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  roi_ts[, <span class="st">"Amygdala_L"</span>],</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Time (TR)"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">"Mean BOLD"</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Amygdala_L ROI BOLD time series"</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-25-homework_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="상관계수로-functional-connectivit-y-matrix-구해서-시각화-하기" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> 상관계수로 functional connectivit y matrix 구해서 시각화 하기</h1>
+<section id="상관계수-fc란" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="상관계수-fc란"><span class="header-section-number">4.1</span> 상관계수, FC란?</h2>
+<p>상관관계: 두 변수가 얼마나 관계성이 있는지. 즉, x가 증가하면 y값은 증가하나 감소하나</p>
+<p>증가한다: 양의 상관관계</p>
+<p>감소한다: 음의 상관관계</p>
+<p>상관계수: 상관관계를 나타내는 수. 양인지 음인지, 직선으로부터 얼마나 떨어져있는지를 나타낼 수 있음</p>
+<p>상관계수 범위: -1&lt;= r &lt;=1</p>
+<p>1에 가까우면 양의 관계 -1에 가까우면 음의 관계 0에 가까우면 관계성이 약하다</p>
+<p>FC(functional connectivity): 해부학적으로 연결되어 있는지 여부와 상관없이 기능적으로 함께 작동하는 정도</p>
+<p>FC의 가장 대표적인 계산방법이 상관계수</p>
+<p>ex) 편도체와 전전두엽의 BOLD 값이 비슷하게 증가하거나 감소한다</p>
+<p>FC를 시각화하는 예시에는 Heatmap, correlation matrix, network graph가 있음</p>
+</section>
+<section id="correlation-matrix-시각화" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="correlation-matrix-시각화"><span class="header-section-number">4.2</span> correlation matrix 시각화</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">cor</span>(roi_ts, <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(cor_mat)   <span class="co"># 164 x 164</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 164 164</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">heatmap</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  cor_mat,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">symm =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"white"</span>, <span class="st">"red"</span>))(<span class="dv">100</span>),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale =</span> <span class="st">"none"</span>,</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">margins =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"ROI-ROI Correlation Matrix (AAL3)"</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-25-homework_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="2026-01-25 homework_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -18,7 +18,7 @@ editor: visual
 ### 읽어오는 법
 
 ```{r}
-install.packages("RNifti")
+install.packages("RNifti", repos = "https://cloud.r-project.org")
 library(RNifti)
 
 fmri <- readNifti("C:\\Users\\USER\\Desktop\\homework\\Filtered_4DVolume.nii")
