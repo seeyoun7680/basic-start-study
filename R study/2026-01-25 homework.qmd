@@ -1,0 +1,232 @@
+---
+title: "fMRI analysis"
+format: 
+  html: 
+    toc: true
+    toc-location: right
+    toc-title: "Contents"
+    toc-depth: 3
+    number-sections: true
+    smooth-scroll: true
+editor: visual
+---
+
+# fMRI 분석 과제
+
+## 1. AFNI의 RS-fMRI 4D 볼륨 파일 하나를 R에서 읽어 오기
+
+### 읽어오는 법
+
+```{r}
+install.packages("RNifti")
+library(RNifti)
+
+fmri <- readNifti("C:\\Users\\USER\\Desktop\\homework\\Filtered_4DVolume.nii")
+```
+
+## 데이터의 dimension 확인하는법
+
+```{r}
+dim(fmri)
+```
+
+## 특정 좌표의 복셀들의 BOLD의 timeseries 추출하는 법
+
+\[x좌표, y좌표, z좌표, time\]
+
+```{r}
+time_series <- fmri[37, 37, 41, ]
+
+length(time_series)
+head(time_series)
+plot(time_series, type="l", xlab="Time (TR index)", ylab="Signal", main="Voxel time series")
+```
+
+# AAL3 atlas를 이용해서 4D 볼륨 파일의 각 복셀을 묶어서 ROI 별로 BOLD 구하기
+
+## 각 복셀들을 AAL3 atlas에 맞춰서 ROI를 지정해서 BOLD 추출하는 법
+
+AAL3 atlas 읽어들이기
+
+```{r}
+aal3 <- readNifti("C:/Users/USER/Desktop/homework/AAL3.nii.gz")
+dim(aal3)
+```
+
+fMRI는 4차원이고 aal은 3차원
+
+frmi\[1:3\]을 이용해 정렬된 상태인지 확인
+
+```{r}
+all(dim(fmri)[1:3] == dim(aal3)) #이건 같은배열의 크기만 가지는거임 정렬이 아님
+
+pixdim(fmri) #voxel 크기비교
+pixdim(aal3)
+all(pixdim(fmri)[1:3] == pixdim(aal3))
+
+xform(fmri) #공간좌표계, 거의 같은 행렬이면 같은 공간
+xform(aal3) #완전히 다르면 registration 필요
+all(xform(fmri)[1:3, 1:3] == xform(aal3)[1:3, 1:3])
+```
+
+⁎ 논문/결과해석/네트워크 분석에서는 pixidim + xform 확인 필수
+
+## AAL3 atlas의 labeling 확인하는 법
+
+```{r}
+labels <- sort(unique(as.vector(aal3))) #aal3에 어떤 라벨들이 있는지 확인
+labels <- labels[labels != 0] #0은 background라 빼는거거
+
+length(labels)
+head(labels)
+
+#label별 voxel 갯수 확인
+tbl <- table(as.vector(aal3))
+tbl <- tbl[names(tbl) != "0"]   # 0 제거
+
+# 복셀 많은 ROI부터 보기
+tbl_sorted <- sort(tbl, decreasing = TRUE)
+head(tbl_sorted, 20)
+
+#label map이 정수label 인지 확인
+# 라벨 값이 모두 정수인지 검사
+vals <- unique(as.vector(aal3))
+vals <- vals[!is.na(vals)]
+
+all(vals == round(vals))# 대략적인 비교. 소숫점이 달라서 완전히 같지는 않음
+
+
+# 내가 찍은 voxel이 어떤 정수인지 확인. 정수값이 45면 aal3 라벨 45번 roi에 속함
+aal3[55, 37, 24]
+
+```
+
+label: 각 복셀에 붙어 있는 정수id. 같은 숫자 = 같은 뇌영역 ex) aal3\[55, 37, 24\]이 45면 amygdala
+
+AAL3 atlas: https://doi.org/10.1016/j.neuroimage.2019.116189 roi 영역 라벨 표
+
+만약 fMRI랑 AAL3가 같지 않으면 AFNI/FSL 등으로 register 해야함
+
+## 각 ROI에 대해 뇌 영역 labeling 하는 법
+
+```{r}
+library <- read.table("C:/Users/USER/Desktop/homework/AAL3v1.nii.txt",
+                  header = FALSE, fill = TRUE, stringsAsFactors = FALSE)
+
+
+colnames(library) <- c("label", "name", "label2")
+library$label <- as.integer(library$label)
+library$name  <- as.character(library$name)
+
+head(library, 10)
+
+roi_names <- library$name[match(labels, library$label)]
+
+T <- dim(fmri)[4]
+fmri_mat <- matrix(fmri, nrow = prod(dim(fmri)[1:3]), ncol = T)
+aal_vec <- as.vector(aal3)
+
+roi_ts <- matrix(NA_real_, nrow = T, ncol = length(labels))
+
+for (i in seq_along(labels)) {
+  lab <- labels[i]
+  idx <- which(aal_vec == lab)
+
+  roi_ts[, i] <- colMeans(fmri_mat[idx, , drop = FALSE], na.rm = TRUE)
+}
+
+colnames(roi_ts) <- ifelse(is.na(roi_names),
+                           paste0("ROI_", labels),
+                           roi_names)
+
+roi_names <- library$name[match(labels, library$label)]
+
+colnames(roi_ts) <- ifelse(is.na(roi_names),
+                           paste0("ROI_", labels),
+                           roi_names)
+
+colnames(roi_ts) <- make.unique(colnames(roi_ts))
+
+dim(roi_ts)
+```
+
+## BOLD를 데이터프레임으로 저장하는 법
+
+```{r}
+T <- nrow(roi_ts)
+
+df_roi <- data.frame(
+  TR = 1:T,
+  roi_ts
+)
+
+head(df_roi[, 1:6])
+
+write.csv(df_roi,
+          file = "C:/Users/USER/Desktop/homework/AAL3_ROI_BOLD.csv",
+          row.names = FALSE)
+```
+
+# 모든 뇌영역 별 BOLD의 timeseries 시각화 하기
+
+## 각 ROI 별 벡터 추출하기
+
+```{r}
+v_amyg <- roi_ts[, "Amygdala_L"]
+length(v_amyg)
+head(v_amyg)
+```
+
+## 각 벡터 plot 시각화
+
+```{r}
+plot(
+  roi_ts[, "Amygdala_L"],
+  type = "l",
+  xlab = "Time (TR)",
+  ylab = "Mean BOLD",
+  main = "Amygdala_L ROI BOLD time series"
+)
+```
+
+# 상관계수로 functional connectivit y matrix 구해서 시각화 하기
+
+## 상관계수, FC란?
+
+상관관계: 두 변수가 얼마나 관계성이 있는지. 즉, x가 증가하면 y값은 증가하나 감소하나
+
+증가한다: 양의 상관관계
+
+감소한다: 음의 상관관계
+
+상관계수: 상관관계를 나타내는 수. 양인지 음인지, 직선으로부터 얼마나 떨어져있는지를 나타낼 수 있음
+
+상관계수 범위: -1\<= r \<=1
+
+1에 가까우면 양의 관계 -1에 가까우면 음의 관계 0에 가까우면 관계성이 약하다
+
+FC(functional connectivity): 해부학적으로 연결되어 있는지 여부와 상관없이 기능적으로 함께 작동하는 정도
+
+FC의 가장 대표적인 계산방법이 상관계수
+
+ex) 편도체와 전전두엽의 BOLD 값이 비슷하게 증가하거나 감소한다
+
+FC를 시각화하는 예시에는 Heatmap, correlation matrix, network graph가 있음
+
+## correlation matrix 시각화
+
+```{r}
+cor_mat <- cor(roi_ts, use = "pairwise.complete.obs", method = "pearson")
+
+dim(cor_mat)   # 164 x 164
+
+heatmap(
+  cor_mat,
+  symm = TRUE,
+  col = colorRampPalette(c("blue", "white", "red"))(100),
+  scale = "none",
+  margins = c(6, 6),
+  main = "ROI-ROI Correlation Matrix (AAL3)"
+)
+
+```
