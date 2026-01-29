@@ -113,6 +113,7 @@ AAL3 atlas: https://doi.org/10.1016/j.neuroimage.2019.116189 roi 영역 라벨 �
 library <- read.table("C:/Users/USER/Desktop/homework/AAL3v1.nii.txt",
                   header = FALSE, fill = TRUE, stringsAsFactors = FALSE)
 
+# AAL3 LUT 구조에 맞게 컬럼 의미 부여
 
 colnames(library) <- c("label", "name", "label2")
 library$label <- as.integer(library$label)
@@ -120,14 +121,18 @@ library$name  <- as.character(library$name)
 
 head(library, 10)
 
+# 각 atlas label에 대응하는 ROI 이름 벡터 생성
 roi_names <- library$name[match(labels, library$label)]
 
+# fMRI 4D 데이터에서 timeseries 추출
 T <- dim(fmri)[4]
+# ROI내 voxel의 평균을 빠르게 계산하기 위해 fMRI 데이터를 2d 행렬로 변환
 fmri_mat <- matrix(fmri, nrow = prod(dim(fmri)[1:3]), ncol = T)
 aal_vec <- as.vector(aal3)
 
 roi_ts <- matrix(NA_real_, nrow = T, ncol = length(labels))
 
+# 각 ROI(label)에 대해 해당 ROI에 속하는 voxel들의 평균 BOLD time series 계산
 for (i in seq_along(labels)) {
   lab <- labels[i]
   idx <- which(aal_vec == lab)
@@ -180,12 +185,27 @@ head(v_amyg)
 ## 각 벡터 plot 시각화
 
 ```{r}
+roi_names <- c("Amygdala_L", "Amygdala_R")
+
 plot(
-  roi_ts[, "Amygdala_L"],
+  roi_ts[, roi_names[1]],
   type = "l",
   xlab = "Time (TR)",
   ylab = "Mean BOLD",
-  main = "Amygdala_L ROI BOLD time series"
+  main = "Amygdala ROI BOLD time series"
+)
+
+for (i in 2:length(roi_names)) {
+  lines(
+    roi_ts[, roi_names[i]],
+    lty = i
+  )
+}
+
+legend(
+  "topright",
+  legend = roi_names,
+  lty = 1:length(roi_names)
 )
 ```
 
@@ -214,6 +234,12 @@ ex) 편도체와 전전두엽의 BOLD 값이 비슷하게 증가하거나 감소
 FC를 시각화하는 예시에는 Heatmap, correlation matrix, network graph가 있음
 
 ## correlation matrix 시각화
+
+빨간색: 양의 상관관계가 높음 = 1과 근접
+
+하얀색: 상관관계 없음
+
+파란생: 음의 상관관계가 높음 = 0과 근접
 
 ```{r}
 cor_mat <- cor(roi_ts, use = "pairwise.complete.obs", method = "pearson")
