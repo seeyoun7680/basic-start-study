@@ -5,7 +5,7 @@ format:
     toc: true
     toc-location: right
     toc-title: "Contents"
-    toc-depth: 3
+    toc-depth: 6
     number-sections: true
     smooth-scroll: true
 editor: visual
