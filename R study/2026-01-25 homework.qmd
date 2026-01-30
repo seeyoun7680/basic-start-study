@@ -5,7 +5,7 @@ format:
     toc: true
     toc-location: right
     toc-title: "Contents"
-    toc-depth: 3
+    toc-depth: 6
     number-sections: true
     smooth-scroll: true
 editor: visual
@@ -185,28 +185,30 @@ head(v_amyg)
 ## 각 벡터 plot 시각화
 
 ```{r}
+par(mfrow = c(1, 1))  # 한 화면에 1개만
+
 roi_names <- c("Amygdala_L", "Amygdala_R")
 
-plot(
-  roi_ts[, roi_names[1]],
-  type = "l",
-  xlab = "Time (TR)",
-  ylab = "Mean BOLD",
-  main = "Amygdala ROI BOLD time series"
-)
+time_idx <- seq_len(nrow(roi_ts))
 
-for (i in 2:length(roi_names)) {
-  lines(
-    roi_ts[, roi_names[i]],
-    lty = i
+for (roi in roi_names) {
+  # 해당 ROI가 roi_ts에 있는지 확인
+  if (!roi %in% colnames(roi_ts)) {
+    warning(paste0("roi_ts에 해당 ROI가 없습니다: ", roi))
+    next
+  }
+
+  ts <- roi_ts[, roi]
+
+  plot(
+    time_idx, ts, type = "l",
+    xlab = "Time (TR index)",
+    ylab = "Mean BOLD",
+    main = roi
   )
+  grid()
 }
 
-legend(
-  "topright",
-  legend = roi_names,
-  lty = 1:length(roi_names)
-)
 ```
 
 # 상관계수로 functional connectivit y matrix 구해서 시각화 하기
@@ -255,4 +257,168 @@ heatmap(
   main = "ROI-ROI Correlation Matrix (AAL3)"
 )
 
+```
+
+# 분산 안정화 변환(Fisher Z Transformation)
+
+## Fisher Z Transformation이란?
+
+표본상관계수 r이 1 또는 -1에 가까울 때, 그 분포는 심하게 왜곡된다. 그래서 모집단 상관계수 p에 대한 신뢰구간을 추정하고 유의성 검정을 적용하기가 어려움. 피셔변환은 r의 다양한 값에 걸쳐 분산이 안정적인 정규분포를 대략적으로 따르는 변수를 생성해 이 문제를 해결
+
+## 수식적 정의
+
+상관계수 r를 Ficher z로 변환
+
+z = 1/2ln{(1+r)/(1-r)}
+
+## 왜 하는가, 언제 하는가?
+
+r이 1이나 -1에 가까울 때, 분포가 왜곡이 생김. 피셔z 변환을 하면 분포가 거의 정규분포와 같아짐. 그래서 집단 비교나 평균 FC 계산이 가능해진다.
+
+FC 기분 통계분석이나 평균 correlation을 계산할 때 사용한다.
+
+## 현재 RS-fMRI로 구한 correlation에 어떻게 변환을 적용할 수 있는가?
+
+Fisher z변환은 행렬원소마다 적용. R에서는 atanh()를 사용해 변환. atanh(1)=Inf가 떠서 보통 대각선은 0으로 두거나 NA로 처리함
+
+### 1) 가장 흔한 방식: 대각선은 0으로 두고 z 변환
+
+```{r}
+# Fisher z transform (element-wise)
+z_mat <- atanh(cor_mat)
+
+# 대각선(자기 자신과의 상관=1) 처리: 보통 0으로 둠
+diag(z_mat) <- 0
+```
+
+### 2. ±1 클리핑 후 변환
+
+```{r}
+eps <- 1e-7
+cor_mat_clip <- pmin(pmax(cor_mat, -1 + eps), 1 - eps)
+
+z_mat <- atanh(cor_mat_clip)
+diag(z_mat) <- 0
+```
+
+클리핑: 값이 허용 범위를 넘어가지 않도록 잘라내는 것
+
+## 변환 후 행렬 원소들 print를 이용해서 어떤 원소로 구성되어 있는지 확인
+
+```{r}
+mat_print <- round(z_mat[1:5, 1:5], 3)
+print(mat_print)
+```
+
+## 변환 후 행렬 시각화
+
+```{r}
+heatmap(
+  z_mat,
+  symm = TRUE,
+  col = colorRampPalette(c("green", "yellow", "red"))(100),
+  scale = "none",
+  margins = c(6, 6),
+  main = "ROI-ROI Fisher z Matrix (AAL3)"
+)
+```
+
+# correlation analysis(상관분석)
+
+## correlation analysis(상관분석)가 무엇이고 언제 하는지
+
+상관분석: 한 변수가 커질 때, 다른 변수도 같이 커지거나 작아지는지를 정량적으로 보는 분석
+
+두 연속형 변수의 관계를 보고싶거나 두 변수가 같이 변하는지 확인하고 싶을 때 사용
+
+## correlation analysis를 위해서는 어떤 가정이 필요한가?
+
+① 한 변수가 증가할수록 다른 변수도 일정한 비율로 변하는지(선형성)
+
+② 숫자 간 거리가 의미가 있어야 한다(범주형 변수 X)
+
+③ 분석 대상인 두 변수는 모집단에서 정규분포를 따라야 한다. 두 변수가 결합하여 이변량 정규분포를 이루는 것이 이상적임
+
+④ 데이터는 무작위로 추출된 독립적인 표본이어야한다. 한 데이터 포인트의 값이 다른 데이터 포인트의 값에 영향을 주면 안됨
+
+⑤ 한 변수의 값이 변화하더라도 다른 변수의 분산이 일정해야 한다. 산점도상에서 변수들이 일정한 폭을 유지하며 퍼져 있어야 함
+
+⑥ 상관계수는 이상치에 매우 민감하므로 분석 전 이상치를 확인하고 처리해야함
+
+## R에서 데이터 프레임이란? 행렬과의 차이는?
+
+행렬: 모든 칸이 같은 타입인 숫자 배열. 수학 연산에 매우 적합함
+
+데이터프레임: 열마다 다른 타입이 가능한 표. 수학 연산에 부적합. 대신 통계나 모델링에 적합하다.
+
+## 통계적 가설 검정/통계적 검정이란 무엇인가? 통계적 검정에서 p값이란?
+
+통계적 가설 검정: 데이터를 이용해 주장이 그럴듯한지 판단하는 절차. 즉, 지금 관측한 차이나 관계가 우연으로도 충분히 나올 수 있는건지를 알아보는 절차
+
+p값 = 귀무가설이 참이라고 가정했을 때, 지금 관측된 결과와 같거나 더 극단적인 결과가 나올 확률. 즉, 차이가 없다고 가정했을 때 지금 결과가 얼마나 드문지를 나타내는 값
+
+## correlation analysis에서 처음 우리는 A영역과 B영역에서 각각 추출한 BOLD 간에 선형 관계가 없다고 가설을 세운다.
+
+### 선형 관계란 무엇을 의미하는가?
+
+선형관계는 A영역에서 BOLD 값이 증가하면 B영역에서 추출한 값이 같은 비율로 증가하거나 감소하는지
+
+### 선형 관계에 대한 통계적인 분석을 할 때 얻어지는 p값에 대해, 이 p값이 작다는 것은 무엇을 의미하는가? 반대로 크다는 것은? 일반적으로 무엇을 기준으로 크다/작다를 판단하는가?
+
+p값이 작다는 것의 의미: A영역과 B영역에서 각각 추출한 BOLD 값 사이에 선형 관계가 존재할 가능성이 높음. 즉, 선형관계가 전혀 없다는 가정하에서는 이정도 상관계수는 우연으로 나타기 힘듦
+
+크다는 것의 의미: 선형관계가 없다는 가정하에서도 이정도 상관계수는 충분히 자주 나올 수 있다
+
+일반적으로 무엇을 기준으로 크다/작다를 판단하는지: 유의 수준을 연구자가 미리 정함. 보통 0.05를 잡는데 이 값의 의미는 우연인데도 효과가 있다고 잘못 결론내릴 확률을 5%까지는 감수하겠다
+
+## 데이터프레임으로 1열은 뇌의 A영역(ROI_A), 2열은 또다른 영역 B (ROI_B)의 이름이 출력되도록 하고, 3열은 이 둘 사이의 correlation 값(raw correlation이라 부름), 4열은 이 raw correlation 값의 Fisher Z transformation 결과, 5열은 3열의 raw correlation 값의 p값, 6열은 5열의 p값의 유의성 정도 표시
+
+```{r}
+# roi_ts: (T x 164) matrix/data.frame, columns are ROIs
+X <- as.matrix(roi_ts)
+
+# raw corr
+r_mat <- cor(X, use = "pairwise.complete.obs", method = "pearson")
+
+# pairwise sample size (각 ROI쌍에서 NA 아닌 관측치 수)
+ok <- is.finite(X)  # NA/NaN/Inf 아닌 곳 TRUE
+n_mat <- t(ok) %*% ok  # (ROI x ROI) 각 pair의 유효 timepoint 개수
+
+# Fisher Z transform (수치 안정용 클리핑 포함)
+eps <- 1e-7
+r_clip <- pmin(pmax(r_mat, -1 + eps), 1 - eps)
+z_mat <- atanh(r_clip)
+diag(z_mat) <- 0  # 대각선은 보통 0으로 둠
+
+# p-value 계산
+# t = r * sqrt((n-2)/(1-r^2)), p = 2*pt(-|t|, df)
+df_mat <- n_mat - 2
+t_mat  <- r_mat * sqrt(df_mat / (1 - r_mat^2))
+p_mat  <- 2 * pt(-abs(t_mat), df = df_mat)
+
+# df가 1 이하면 p-value는 계산 불가 -> NA 처리
+p_mat[df_mat <= 0] <- NA
+diag(p_mat) <- NA
+
+# long-format data.frame (상삼각만: ROI쌍 1번씩만)
+roi_names <- colnames(X)
+idx <- which(upper.tri(r_mat), arr.ind = TRUE)
+
+df_edges <- data.frame(
+  ROI_A = roi_names[idx[, 1]],
+  ROI_B = roi_names[idx[, 2]],
+  raw_corr = r_mat[idx],
+  fisher_z = z_mat[idx],
+  p_value = p_mat[idx],
+  stringsAsFactors = FALSE
+)
+
+# 유의성 표시 컬럼
+df_edges$signif <- ifelse(is.na(df_edges$p_value), NA,
+                   ifelse(df_edges$p_value < 0.001, "***",
+                   ifelse(df_edges$p_value < 0.01,  "**",
+                   ifelse(df_edges$p_value < 0.05,  "*",
+                          "not significant"))))
+
+head(df_edges, 10)
 ```
