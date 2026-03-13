@@ -1,0 +1,145 @@
+---
+title: "Is-RSA"
+format: html
+editor: visual
+---
+
+```{r}
+install.packages("pheatmap")
+library(pheatmap)
+
+```
+
+# IS-RSA 실습
+
+## CSV 파일 불러오기
+
+```{r}
+csv_path <- "C:/Users/USER/Desktop/analysis_practice/roi_ts/roi_timeseries.csv"
+dat <- read.csv(csv_path, check.names = FALSE)
+
+# subjects x timepoints
+X <- t(as.matrix(dat[, -1]))
+rownames(X) <- colnames(dat)[-1]
+
+dim(X)          # 기대: 16 x 300 (혹은 13~16 x 300)
+X[1, 1:5]
+```
+
+## 뇌 유사도 행렬 만들기
+
+```{r}
+# brain similarity matrix (14 x 14)
+brain_sim <- cor(t(X), method = "pearson")
+diag(brain_sim) <- 1
+
+dim(brain_sim)
+brain_sim[1:5, 1:5]
+```
+
+## 행동유사도 만들기
+
+```{r}
+set.seed(42)
+n_subj <- nrow(X)
+beh <- rnorm(n_subj, mean = 0, sd = 1)
+beh_dist <- as.matrix(dist(beh, method = "euclidean"))
+beh_sim <- 1 - (beh_dist / max(beh_dist))
+diag(beh_sim) <- 1
+
+```
+
+## IS-RSA 계산
+
+```{r}
+# upper triangle index
+upper_idx <- upper.tri(brain_sim, diag = FALSE)
+
+brain_vec <- brain_sim[upper_idx]
+beh_vec   <- beh_sim[upper_idx]
+
+# Spearman correlation
+isrsa_r <- cor(brain_vec, beh_vec, method = "spearman")
+
+isrsa_r
+```
+
+## Premutation null
+
+```{r}
+n_perm <- 10000
+perm_r <- numeric(n_perm)
+
+for (p in seq_len(n_perm)) {
+
+  perm_beh <- sample(beh)
+
+  perm_dist <- as.matrix(dist(perm_beh))
+  perm_sim  <- 1 - (perm_dist / max(perm_dist))
+  diag(perm_sim) <- 1
+
+  perm_r[p] <- cor(
+    brain_vec,
+    perm_sim[upper_idx],
+    method = "spearman"
+  )
+}
+
+# p-value
+p_val <- (sum(abs(perm_r) >= abs(isrsa_r)) + 1) / (n_perm + 1)
+
+p_val
+
+```
+
+## 시각화
+
+### 뇌 유사도 행렬
+
+```{r}
+library(pheatmap)
+
+pheatmap(
+  brain_sim,
+  main = "Brain Similarity Matrix",
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean"
+)
+
+```
+
+### 헹동 유사도 행렬
+
+```{r}
+pheatmap(
+  beh_sim,
+  main = "Behavior Similarity Matrix"
+)
+
+```
+
+### 두 행렬의 Scatter plot
+
+```{r}
+plot(
+  brain_vec,
+  beh_vec,
+  xlab = "Brain similarity",
+  ylab = "Behavior similarity",
+  main = "IS-RSA",
+  pch = 19
+)
+
+abline(lm(beh_vec ~ brain_vec), col = "red", lwd = 2)
+```
+
+```{r}
+hist(
+  perm_r,
+  breaks = 50,
+  main = "Permutation null distribution",
+  xlab = "Correlation"
+)
+
+abline(v = isrsa_r, col = "red", lwd = 3)
+```
