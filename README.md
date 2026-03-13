@@ -6,7 +6,7 @@ https://html-preview.github.io/?url=https://github.com/seeyoun7680/basic-start-s
 
 https://html-preview.github.io/?url=https://github.com/seeyoun7680/basic-start-study/blob/main/R%20study/2026-01-25%20homework.html
 
-https://html-preview.github.io/?url=https://github.com/seeyoun7680/basic-start-study/blob/main/R%20study/0313%과제.html
+https://html-preview.github.io/?url=https://github.com/seeyoun7680/basic-start-study/blob/main/R%20study/0313%homework.html
 # 2) Mean difference test between two groups
 
 # 3) Mean difference test among more than three groups
