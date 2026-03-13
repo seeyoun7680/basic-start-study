@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>0313_homework</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="0313 homework_files/libs/clipboard/clipboard.min.js"></script>
+<script src="0313 homework_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="0313 homework_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="0313 homework_files/libs/quarto-html/popper.min.js"></script>
+<script src="0313 homework_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="0313 homework_files/libs/quarto-html/anchor.min.js"></script>
+<link href="0313 homework_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="0313 homework_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="0313 homework_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="0313 homework_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="0313 homework_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#회귀분석" id="toc-회귀분석" class="nav-link active" data-scroll-target="#회귀분석"><span class="header-section-number">1</span> 회귀분석</a></li>
+  <li><a href="#t검정" id="toc-t검정" class="nav-link" data-scroll-target="#t검정"><span class="header-section-number">2</span> t검정</a></li>
+  <li><a href="#anova" id="toc-anova" class="nav-link" data-scroll-target="#anova"><span class="header-section-number">3</span> ANOVA</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="0313-homework.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">0313_homework</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<ul>
+<li><p>한국 사람의 체중은 평균 70kg, 표준편차 3인 정규분포를 따른다고 하자. 임의의 100명의 한국인의 데이터를 모았을 때, 이들의 체중에 대한 표본평균은 대충 얼마일까? (1문장으로 “본인의 생각”을 쓰시오.)<br>
+표본평균은 대략 70kg 정도 추정할 수 있습니다. 왜냐하면 100 명이나 모았기 때문에 n수가 30을 넘어 몸무게가 모평균과 수렴할 가능성이 높을거 같습니다.</p></li>
+<li><p>한국 사람의 신장은 평균 165cm, 표준편차 10인 정규분포를 따른다고 하자. 임의의 100명의 한국인의 데이터를 모았을 때, 이들의 키에 대한 표본평균은 대충 얼마일까? (1문장으로 “본인의 생각”을 쓰시오.)</p>
+<p>표본평균은 대략 165cm 정도 추정할 수 있습니다. 왜냐하면 100 명이나 모았기 때문에 n수가 30을 넘어 키가 모평균과 수렴할 가능성이 높을거 같습니다.<br>
+</p></li>
+</ul>
+<section id="회귀분석" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> 회귀분석</h1>
+<ul>
+<li><p>선형회귀모형은 여러 개의 설명변수들의 선형결합을 이용해서 “무엇”을 추정하고자 하는 것일까? (1문장)<br>
+선형회귀모형은 Y=ax + b로 종속변수 Y값(기대값)을 추정하고자 하는것입니다.</p></li>
+<li><p>로지스틱회귀모형은 여러 개의 설명변수들의 선형결합을 이용해서 “무엇”을 추정하고자 하는 것일까? (1문장)<br>
+시그모이드 함수를 통해 성공확률(p)값을 추정하고자 하는것입니다.</p></li>
+</ul>
+</section>
+<section id="t검정" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> t검정</h1>
+<ul>
+<li><p>t검정(t-test)는 언제 쓰는가 (1문장으로)<br>
+두 집단의 평균이 통계적으로 유의하게 차이가 있는지 검정하기 위해</p></li>
+<li><p>t검정을 위해 어떤 가정들이 필요한가? (명사형으로 나열. 길게 쓰지 말 것)<br>
+정규성, 독립성, 등분산성</p></li>
+<li><p>왜 t검정은 이름이 t일까?<br>
+t-분포를 이용한 검정이라서</p></li>
+<li><p>t검정에서 왜 정규분포에 대한 가정이 필요할까? (1문장으로)<br>
+검정통계량이 t-분포를 따른다는 이론적 유도가 모집단이 정규분포라는걸 기반으로 하기 때문에</p></li>
+<li><p>일반적인 t검정과 paired t-test의 차이는? (1문장으로)<br>
+paired t-test는 같은 대상에서 측정한 다른 시점의 두 값의 차이의 평균이 0인지를 검정하는 것이다.</p></li>
+<li><p>paired t-test의 예시를 3개 쓰시오.<br>
+어떤사람이 병이 걸리기 전과 후의 백혈구 수치를 비교, 어떤 학생이 교육을 받기 전과 후의 평균 성적을 비교, 어떤 사람의 편도체 ROI의 평균 timeseries 값을 약물 사용 전후로 비교</p></li>
+<li><p>R의 내장 데이터인 iris 데이터의 두 species(setosa 와 versicolor)에 대해 “Sepal.Length” “Sepal.Width” “Petal.Length” “Petal.Width” 각각에 대해 t검정을 수행하여 결과를 해석하라.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> iris[iris<span class="sc">$</span>Species <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"setosa"</span>, <span class="st">"versicolor"</span>), ]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>Species <span class="ot">&lt;-</span> <span class="fu">droplevels</span>(df<span class="sc">$</span>Species)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 4개 변수에 대해 t-검정 수행</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sepal.Length"</span>, <span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Length"</span>, <span class="st">"Petal.Width"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (v <span class="cf">in</span> vars) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=========================================="</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">변수:"</span>, v, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">t.test</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(v, <span class="st">"~ Species"</span>)), <span class="at">data =</span> df))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+==========================================
+변수: Sepal.Length 
+
+    Welch Two Sample t-test
+
+data:  Sepal.Length by Species
+t = -10.521, df = 86.538, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means between group setosa and group versicolor is not equal to 0
+95 percent confidence interval:
+ -1.1057074 -0.7542926
+sample estimates:
+    mean in group setosa mean in group versicolor 
+                   5.006                    5.936 
+
+
+==========================================
+변수: Sepal.Width 
+
+    Welch Two Sample t-test
+
+data:  Sepal.Width by Species
+t = 9.455, df = 94.698, p-value = 2.484e-15
+alternative hypothesis: true difference in means between group setosa and group versicolor is not equal to 0
+95 percent confidence interval:
+ 0.5198348 0.7961652
+sample estimates:
+    mean in group setosa mean in group versicolor 
+                   3.428                    2.770 
+
+
+==========================================
+변수: Petal.Length 
+
+    Welch Two Sample t-test
+
+data:  Petal.Length by Species
+t = -39.493, df = 62.14, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means between group setosa and group versicolor is not equal to 0
+95 percent confidence interval:
+ -2.939618 -2.656382
+sample estimates:
+    mean in group setosa mean in group versicolor 
+                   1.462                    4.260 
+
+
+==========================================
+변수: Petal.Width 
+
+    Welch Two Sample t-test
+
+data:  Petal.Width by Species
+t = -34.08, df = 74.755, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means between group setosa and group versicolor is not equal to 0
+95 percent confidence interval:
+ -1.143133 -1.016867
+sample estimates:
+    mean in group setosa mean in group versicolor 
+                   0.246                    1.326 </code></pre>
+</div>
+</div>
+<p>Sepal.Length, Sepal.Width, Petal.Length, Petal.Width 모두 다 p-value가 0.001보다 더 작아서 setosa와 versicolor 간 평균 차이가 통계적으로 유의하다. Petal.Length랑 Petal.Width 두 종의 차이가 가장 극명하고 Sepla Width에서 유일하고 setosa가 더 컸다</p>
+<ul>
+<li><p>7)과 같이 t검정을 여러 번 수행했을 때의 문제점은? (2문장으로)<br>
+검정을 여러번 반복하면 type 1 error가 누적됩니다. 그러면 전체적으로 귀무가설이 참임에도 적어도 하나를 유의하다고 잘못 판단할 확률이 크게 증가하는 다중검정 문제가 발생할 수 있습니다.</p></li>
+<li><p>8)을 해결하기 위해 어떤 방법을 쓸 수 있을까? (3문장으로)<br>
+본페로니 보정을 사용합니다. 세 집단 이상의 경우는 ANOVA를 사용해 전체적인 차이 유무를 판단하고 비교를 진행해야합니다. FDR 보정을 적용합니다.</p></li>
+<li><p>7)의 분석만 하면 틀렸다. 왜? (1문장으로)<br>
+다중비교 보정 없이 t-test만 4번 수행해서 type 1 error가 통제되지 않았음</p></li>
+</ul>
+</section>
+<section id="anova" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> ANOVA</h1>
+<ul>
+<li><p>ANOVA는 무엇의 약자? (1문장)<br>
+Analysis of Variance(분산분석)의 약자이다.</p></li>
+<li><p>ANOVA는 언제 쓰는가? (1문장)<br>
+세 개 이상의 집단 간 평균에 통계적으로 유의한 차이가 있는지를 동시에 검정할 때 사용한다.</p></li>
+<li><p>ANOVA의 기본 가정은 무엇이 있는가(명사형 나열)<br>
+정규성, 독립성, 등분산성</p></li>
+<li><p>t검정을 여러 번 해서 각 그룹을 비교할 수 있지 않을까? 왜 ANOVA를 쓸까? (2문장으로)<br>
+t검정을 반복하면 검정 횟수가 늘어남에 따라 1종 오류율이 급격히 증가하여 잘못된 유의성 검정이 커진다. 아노바는 하나의 검정으로 전체 집단 간 차이를 동시에 판단할 수 있다.</p></li>
+<li><p>왜 이름에 분산이 들어 갈까? (3문장)<br>
+전체 데이터의 변동을 집단간 변동과 집단 내 변동으로 분해한다. 만약 집단 단 변동이 집단 내 변동에 비해 충분히 크다면 그 차이는 우연이 아니다. 분산을 분석해서 평균 차이를 검정하는 방법이기 때문이다.</p></li>
+<li><p>F검정이란 무엇인가? (2문장)<br>
+두 분산의 비를 이용하여 집단 간 차이가 유의한지를 판단하는 검정 방법이다. ANOVA에서는 집단 간 분산/집단 내 분산으로 계산된 F 통계량이 F-분포를 따르는지를 기준으로 귀무가설 기각 여부를 결정하기 때문이다.</p></li>
+<li><p>왜 이름에 F가 들어갈까? (1문장)<br>
+로널드 피셔의 이름 첫 글자를 따서 F-분포라고 명명</p></li>
+<li><p>F검정에 대한 가정은 무엇일까? (명사형 나열)<br>
+정규성, 독립성, 등분산성</p></li>
+<li><p>왜 ANOVA에서 F검정을 수행할까? (3문장)<br>
+모든 집단 평균이 동일하면 F통계량은 1 근처의 값을 가짐. 집단 간 평균에 실제 차이가 있으면 F값이 1보다 크게 나타남. 따라서 F통계량이 F-분포의 임계값을 초과하는지를 확인하는 F검정이 아노바에서 가설 검정을 한다.</p></li>
+<li><p>R의 내장 데이터인 iris 데이터의 세 species에 대해 “Sepal.Length” “Sepal.Width” “Petal.Length” “Petal.Width” 각각에 대해 ANOVA를 수행하여 결과를 해석하라.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Sepal.Length"</span>, <span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Length"</span>, <span class="st">"Petal.Width"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (v <span class="cf">in</span> vars) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=========================================="</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">변수:"</span>, v, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">aov</span>(<span class="fu">as.formula</span>(<span class="fu">paste</span>(v, <span class="st">"~ Species"</span>)), <span class="at">data =</span> iris)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">summary</span>(model))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+==========================================
+변수: Sepal.Length 
+             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+Species       2  63.21  31.606   119.3 &lt;2e-16 ***
+Residuals   147  38.96   0.265                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+==========================================
+변수: Sepal.Width 
+             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+Species       2  11.35   5.672   49.16 &lt;2e-16 ***
+Residuals   147  16.96   0.115                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+==========================================
+변수: Petal.Length 
+             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+Species       2  437.1  218.55    1180 &lt;2e-16 ***
+Residuals   147   27.2    0.19                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+==========================================
+변수: Petal.Width 
+             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+Species       2  80.41   40.21     960 &lt;2e-16 ***
+Residuals   147   6.16    0.04                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Sepal.Length, Sepal.Width, Petal.Length, Petal.Width 모두 다 p-value가 0.001보다 더 작아서 setosa, versicolor, virginica 간 평균 차이가 통계적으로 유의하다. Petal.Length에서 세 종의 차이가 가장 크게 났다.</p>
+<ul>
+<li><p>10)의 분석만 하면 틀렸다. 왜? (1문장)</p>
+<p>아노바는 차이가 있다, 없다만 알려주는 분석이라 사후검정을 통해 어디서 차이가 있는지를 알아야한다.</p></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="0313 homework_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

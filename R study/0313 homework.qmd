@@ -30,7 +30,7 @@ editor: visual
 -   로지스틱회귀모형은 여러 개의 설명변수들의 선형결합을 이용해서 "무엇"을 추정하고자 하는 것일까? (1문장)\
     시그모이드 함수를 통해 성공확률(p)값을 추정하고자 하는것입니다.
 
-#  t검정
+# t검정
 
 -   t검정(t-test)는 언제 쓰는가 (1문장으로)\
     두 집단의 평균이 통계적으로 유의하게 차이가 있는지 검정하기 위해
@@ -78,7 +78,7 @@ Sepal.Length, Sepal.Width, Petal.Length, Petal.Width 모두 다 p-value가 0.001
 -   7)의 분석만 하면 틀렸다. 왜? (1문장으로)\
     다중비교 보정 없이 t-test만 4번 수행해서 type 1 error가 통제되지 않았음
 
-#  ANOVA
+# ANOVA
 
 -   ANOVA는 무엇의 약자? (1문장)\
     Analysis of Variance(분산분석)의 약자이다.
