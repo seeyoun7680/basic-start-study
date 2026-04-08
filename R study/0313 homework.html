@@ -163,30 +163,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="로지스틱회귀모형은-여러-개의-설명변수들의-선형결합을-이용해서-무엇을-추정하고자-하는-것일까-1문장" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="로지스틱회귀모형은-여러-개의-설명변수들의-선형결합을-이용해서-무엇을-추정하고자-하는-것일까-1문장"><span class="header-section-number">2.2</span> 로지스틱회귀모형은 여러 개의 설명변수들의 선형결합을 이용해서 “무엇”을 추정하고자 하는 것일까? (1문장)</h2>
-<p>시그모이드 함수를 통해 성공확률(p)값을 추정하고자 하는것입니다.</p>
+<p>설명변수의 선형결합을 통해 로그오즈를 모델링하고 이 수식을 변형해서 성공확률(p)값을 추정하고자 하는것입니다.</p>
 </section>
 </section>
 <section id="t검정" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> t검정</h1>
 <section id="t검정t-test는-언제-쓰는가-1문장으로" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="t검정t-test는-언제-쓰는가-1문장으로"><span class="header-section-number">3.1</span> t검정(t-test)는 언제 쓰는가 (1문장으로)</h2>
-<p>두 집단의 평균이 통계적으로 유의하게 차이가 있는지 검정하기 위해</p>
+<p>연속형 변수의 평균을 두 집단에서 비교할 때 사용</p>
 </section>
 <section id="t검정을-위해-어떤-가정들이-필요한가-명사형으로-나열.-길게-쓰지-말-것" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="t검정을-위해-어떤-가정들이-필요한가-명사형으로-나열.-길게-쓰지-말-것"><span class="header-section-number">3.2</span> t검정을 위해 어떤 가정들이 필요한가? (명사형으로 나열. 길게 쓰지 말 것)</h2>
 <p>정규성, 독립성, 등분산성</p>
+<p>정규성: 데이터가 평균을 중심으로 좌우대칭인 종모양 분포를 따른다는 뜻</p>
+<p>독립성: 한 관측값이 다른 관측값에 영향을 주지 않는다는 뜻</p>
+<p>등분산성: 비교하는 집단들의 분산, 즉 퍼진 정도가 서로 비슷하다는 뜻</p>
 </section>
 <section id="왜-t검정은-이름이-t일까" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="왜-t검정은-이름이-t일까"><span class="header-section-number">3.3</span> 왜 t검정은 이름이 t일까?</h2>
 <p>t-분포를 이용한 검정이라서</p>
+<p>정규성을 가정한다는 말은 모집단이 정규분포를 따른다고 봄</p>
+<p>z검정은 모집단이 정규분포이고 모표준편차를 알고 있을때 사용</p>
+<p>근데 보통은 모표준편차를 모르기때문에 t-test 사용</p>
 </section>
 <section id="t검정에서-왜-정규분포에-대한-가정이-필요할까-1문장으로" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="t검정에서-왜-정규분포에-대한-가정이-필요할까-1문장으로"><span class="header-section-number">3.4</span> t검정에서 왜 정규분포에 대한 가정이 필요할까? (1문장으로)</h2>
-<p>검정통계량이 t-분포를 따른다는 이론적 유도가 모집단이 정규분포라는걸 기반으로 하기 때문에</p>
+<p>표본평균이 정규분포를 따른다고 가정할 수 있어야 t 통계량이 t분포를 따른다는 이론이 성립함</p>
 </section>
 <section id="일반적인-t검정과-paired-t-test의-차이는-1문장으로" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="일반적인-t검정과-paired-t-test의-차이는-1문장으로"><span class="header-section-number">3.5</span> 일반적인 t검정과 paired t-test의 차이는? (1문장으로)</h2>
-<p>paired t-test는 같은 대상에서 측정한 다른 시점의 두 값의 차이의 평균이 0인지를 검정하는 것이다.</p>
+<p>paired t-test는 같은 대상에서 측정한 다른 시점의 두 값의 차이의 평균을 비교하는 것이다.</p>
+<p>양측검정: 차이가 있는지만 보고 싶을 때</p>
+<p>우측검정: 차이가 0보다 큰지 보고 싶을 때</p>
+<p>좌측검정: 차이가 0보다 작은지 보고 싶을 때</p>
+<p>방향을 미리 정하지 않았으면 양측검정, 증가/감소를 연구가설로 정했으면 단측검정</p>
 </section>
 <section id="paired-t-test의-예시를-3개-쓰시오." class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="paired-t-test의-예시를-3개-쓰시오."><span class="header-section-number">3.6</span> paired t-test의 예시를 3개 쓰시오.</h2>
@@ -277,11 +287,17 @@ sample estimates:
 </section>
 <section id="을-해결하기-위해-어떤-방법을-쓸-수-있을까-3문장으로" class="level2" data-number="3.9">
 <h2 data-number="3.9" class="anchored" data-anchor-id="을-해결하기-위해-어떤-방법을-쓸-수-있을까-3문장으로"><span class="header-section-number">3.9</span> 8)을 해결하기 위해 어떤 방법을 쓸 수 있을까? (3문장으로)</h2>
-<p>본페로니 보정을 사용합니다. 세 집단 이상의 경우는 ANOVA를 사용해 전체적인 차이 유무를 판단하고 비교를 진행해야합니다. FDR 보정을 적용합니다.</p>
+<p>본페로니 보정을 사용합니다. Benjamini-Hochberg 방법을 사용합니다. FDR 보정을 적용합니다.</p>
+<p>FWER: 여러 가설검정을 동시에 할 때 하나라도 제1종 오류가 발생할 확률을 통제하는 방법</p>
+<p>FDR: 여러 가설검정에서 유의하다고 판단한 결과들 중 실제로 오류인 비율의 기대값을 통제하는 방법</p>
+<p>차이점: FWER는 오류를 매우 엄격하게 줄이는 방식, FDR은 일부 오류를 허용하는 대신 더 많은 유의한 결과를 찾기 쉬운 방식</p>
 </section>
 <section id="의-분석만-하면-틀렸다.-왜-1문장으로" class="level2" data-number="3.10">
 <h2 data-number="3.10" class="anchored" data-anchor-id="의-분석만-하면-틀렸다.-왜-1문장으로"><span class="header-section-number">3.10</span> 7)의 분석만 하면 틀렸다. 왜? (1문장으로)</h2>
 <p>다중비교 보정 없이 t-test만 4번 수행해서 type 1 error가 통제되지 않았음</p>
+<p>정규성은 각 집단 자료가 정규분포를 따르는지 Shapiro-Wilk 검정 등으로 확인한다.</p>
+<p>등분산성은 두 집단의 분산이 같은지 Levene 검정 또는 F-test 등으로 확인한다</p>
+<p>독립성은 관측값들이 서로 영향을 주지 않는지 연구 설계로 우선 판단하며, Durbin-Watson 검정으로 확인할 수 있다.</p>
 </section>
 </section>
 <section id="anova" class="level1" data-number="4">
@@ -305,10 +321,15 @@ sample estimates:
 <section id="왜-이름에-분산이-들어-갈까-3문장" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="왜-이름에-분산이-들어-갈까-3문장"><span class="header-section-number">4.5</span> 왜 이름에 분산이 들어 갈까? (3문장)</h2>
 <p>전체 데이터의 변동을 집단간 변동과 집단 내 변동으로 분해한다. 만약 집단 단 변동이 집단 내 변동에 비해 충분히 크다면 그 차이는 우연이 아니다. 분산을 분석해서 평균 차이를 검정하는 방법이기 때문이다.</p>
+<p>전체 변동: 모든 관측값이 전체 평균에서 얼마나 떨어져 있는지를 나타내는 변동</p>
+<p>집단 간 변동: 각 집단의 집단평균이 전체평균에서 얼마나 떨어져 있는지 나타내는 변동</p>
+<p>집단 내 변동: 같은 집단 안에서 각 관측값이 그 집단평균으로부터 얼마나 퍼져 있는지 나타내는 변동</p>
+<p>이걸 비교하는 이유는 만약 반마다 평균이 비슷하면, 반끼리 큰 차이가 없다고 볼 수 있음. 그런데 집단 안의 차이보다 집단끼리 평균 차이가 훨씬 크면, 집단들의 평균이 정말 다르다고 생각할 수 있다.</p>
 </section>
 <section id="f검정이란-무엇인가-2문장" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="f검정이란-무엇인가-2문장"><span class="header-section-number">4.6</span> F검정이란 무엇인가? (2문장)</h2>
 <p>두 분산의 비를 이용하여 집단 간 차이가 유의한지를 판단하는 검정 방법이다. ANOVA에서는 집단 간 분산/집단 내 분산으로 계산된 F 통계량이 F-분포를 따르는지를 기준으로 귀무가설 기각 여부를 결정하기 때문이다.</p>
+<p>F검정통계량이 커진다는 것은 집단 간 변동이 집단 내 변동보다 훨씬 크다는 뜻이다. 각 집단의 평균 차이가 같은 집단 안에서의 우연한 흔들림보다 크다는 의미이다. 따라서 집단 평균들이 서로 같지 않을 가능성이 크다고 판단하게 된다.</p>
 </section>
 <section id="왜-이름에-f가-들어갈까-1문장" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="왜-이름에-f가-들어갈까-1문장"><span class="header-section-number">4.7</span> 왜 이름에 F가 들어갈까? (1문장)</h2>
